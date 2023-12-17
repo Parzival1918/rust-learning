@@ -1,3 +1,5 @@
+Read the docs made with [mdBook](https://rust-lang.github.io/mdBook/index.html) in [here](https://parzival1918.github.io/rust-learning/index.html).
+
 # Rust
 
 - The rust book [here](https://doc.rust-lang.org/book/title-page.html)
