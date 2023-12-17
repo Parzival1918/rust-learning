@@ -1,0 +1,6 @@
+[book]
+authors = ["Pedro Juan Royo"]
+language = "en"
+multilingual = false
+src = "src"
+title = "My Rust learning journey"
