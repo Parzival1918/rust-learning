@@ -1,4 +1,4 @@
-# hello\_world
+# hello\_cargo
 
 The book section dealing with this is [Section 1.3](https://doc.rust-lang.org/book/ch01-03-hello-cargo.html).
 
