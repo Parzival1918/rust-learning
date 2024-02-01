@@ -1,4 +1,4 @@
-use dialoguer::{Select, Input};
+use dialoguer::{Select, Input, Confirm};
 use dialoguer::theme::ColorfulTheme;
 use console::Style;
 
@@ -40,5 +40,15 @@ fn main() {
         }
 
         println!("The conversion to other degree scale is: {}", output_style.apply_to(result));
+
+        let confirmation = Confirm::with_theme(&ColorfulTheme::default()).with_prompt("Exit?").default(true).show_default(true)
+            .interact().unwrap();
+
+        match confirmation {
+            true => break,
+            false => continue
+        }
     }
+
+    println!("Thanks for using this program! See you again soon :)");
 }
