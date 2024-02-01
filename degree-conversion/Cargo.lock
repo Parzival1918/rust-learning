@@ -37,6 +37,7 @@ dependencies = [
 name = "degree-conversion"
 version = "0.1.0"
 dependencies = [
+ "console",
  "dialoguer",
 ]
 
