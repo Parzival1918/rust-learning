@@ -1,4 +1,8 @@
 use std::str::FromStr;
+use rand::{thread_rng, Rng};
+use dialoguer::{Select, Input, Confirm};
+use dialoguer::theme::ColorfulTheme;
+use std::fmt;
 
 #[allow(unused)]
 enum Coin {
@@ -6,6 +10,18 @@ enum Coin {
     Nickel,
     Dime,
     Quarter
+}
+
+impl fmt::Display for Coin {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        
+        match self {
+            Self::Penny => write!(f, "Penny"),
+            Self::Nickel => write!(f, "Nickel"),
+            Self::Dime => write!(f, "Dime"),
+            Self::Quarter => write!(f, "Quarter"),
+        }
+    }
 }
 
 #[allow(unused)]
@@ -34,7 +50,7 @@ impl Purse {
     fn new(owner: &str) -> Self {
         Self {
             coins: vec![],
-            capacity: 10u8,
+            capacity: thread_rng().gen_range(5..=15u8),
             owner: String::from_str(owner).unwrap()
         }
     }
@@ -48,6 +64,7 @@ impl Purse {
         Ok(())
     } 
 
+    /// The number of coins in the purse 
     fn coin_count(&self) -> usize {
         self.coins.len()
     }
@@ -91,4 +108,54 @@ fn main() {
     println!("Number of coins in my purse: {}", my_purse.coin_count());
     println!("Amount of coins of each type: {:?}", my_purse.count_each());
     println!("Total value of the coins is: {}", my_purse.total_value());
+
+    let opts = vec!["Contents", "Add coins", "Exit"];
+
+    let owner: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Your name?").interact_text().unwrap();
+    let mut purse = Purse::new(&owner);
+
+    loop {
+        let choice = Select::with_theme(&ColorfulTheme::default()).with_prompt("Choose one").default(0)
+            .items(&opts).interact().unwrap();
+
+        match opts[choice] {
+            "Contents" => show_contents(&purse),
+            "Add coins" => add_coins(&mut purse),
+            "Exit" => {
+                let confirm = Confirm::with_theme(&ColorfulTheme::default()).with_prompt("Are you sure?").default(true)
+                    .interact().unwrap();
+
+                if confirm {
+                    break
+                }
+            }
+            _ => break
+        }
+    }
+}
+
+fn show_contents(purse: &Purse) {
+    println!(" - There are {} coins in the purse", purse.coin_count());
+    println!(" - The total amounts to {} cents", purse.total_value());
+    println!(" - The maximum amount of coins you can hold is {}", purse.capacity);
+}
+
+fn add_coins(purse: &mut Purse) {
+    let coins = vec![Coin::Penny, Coin::Nickel, Coin::Dime, Coin::Quarter];
+    let idx = Select::with_theme(&ColorfulTheme::default()).with_prompt("Which coin are you adding?").default(0)
+            .items(&coins).interact().unwrap();
+
+    let coin: Coin;
+    match idx {
+        0 => coin = Coin::Penny,
+        1 => coin = Coin::Nickel,
+        2 => coin = Coin::Dime,
+        3 => coin = Coin::Quarter,
+        _ => coin = Coin::Penny,
+    }
+    
+    match purse.add_coin(coin) {
+        Ok(_) => println!("Coin added!"),
+        Err(_) => println!("Limit of purse reached! Coin not added")
+    }
 }
