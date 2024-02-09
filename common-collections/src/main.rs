@@ -1,4 +1,7 @@
 use std::collections::HashMap;
+use rand::seq::IteratorRandom;
+use dialoguer::{Select, Input, Confirm};
+use dialoguer::theme::ColorfulTheme;
 
 fn main() {
     // 1. Given a list of integers, use a vector and return the median (when sorted, the value in the middle position) 
@@ -57,4 +60,61 @@ fn main() {
     // 3. Using a hash map and vectors, create a text interface to allow a user to add employee names to a department in a company. 
     // For example, “Add Sally to Engineering” or “Add Amir to Sales.” Then let the user retrieve a list of all people in a department 
     // or all people in the company by department, sorted alphabetically.
+
+    let mut employees: HashMap<String, String> = HashMap::new();
+    let departments = ["HR", "Cleaning", "IT", "Sales", "Customer support"]; 
+    let rand_names = ["Ronald", "Abel", "Mirin", "Yule", "Brian"];
+    let rand_surnames = ["Smithson", "Juan", "Roller", "Bowl", "Kale"];
+    let actions = ["Add employee", "Show all employees", "Show employees of department", "Exit"];
+
+    // Add some initial employees with rand crate
+    let mut rng = rand::thread_rng();
+    for _ in 0..5 {
+        let name: &str = rand_names.iter().choose(&mut rng).unwrap();
+        let surname: &str = rand_surnames.iter().choose(&mut rng).unwrap();
+        let department: &str = departments.iter().choose(&mut rng).unwrap();
+    
+        employees.insert(String::from(format!("{name} {surname}")), String::from(department.to_string()));
+    }
+
+    loop {
+        let action = Select::with_theme(&ColorfulTheme::default()).items(&actions).default(0)
+            .interact().unwrap();
+
+        match action {
+            0 => add_employee(&mut employees, &departments),
+            1 => show_all(&employees),
+            2 => show_department(&employees),
+            3 => break,
+            _ => {
+                println!("Undefined selection");
+                break;
+            }
+        };
+    }
+}
+
+fn add_employee(employees: &mut HashMap<String, String>, deps: &[&str]) {
+    let name: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Name and surname of employee")
+        .interact_text().unwrap();
+    let dep = Select::with_theme(&ColorfulTheme::default()).items(deps).default(0).interact().unwrap();
+    let dep = deps[dep];
+
+    match employees.insert(name, String::from(dep)) {
+        Some(old_dep) => println!("Employee has been moved from {}", old_dep),
+        None => println!("New employee added!"),
+    };
+}
+
+fn show_all(employees: &HashMap<String, String>) {
+    let mut emp_vec: Vec<(&String, &String)>= employees.iter().collect();
+    emp_vec.sort_by(|a, b| a.1.cmp(b.1));
+    
+    for (name, dep) in emp_vec {
+        println!("{}: {}", name, dep);
+    }
+}
+
+fn show_department(employees: &HashMap<String, String>) {
+    
 }
