@@ -84,7 +84,7 @@ fn main() {
         match action {
             0 => add_employee(&mut employees, &departments),
             1 => show_all(&employees),
-            2 => show_department(&employees),
+            2 => show_department(&employees, &departments),
             3 => break,
             _ => {
                 println!("Undefined selection");
@@ -107,14 +107,25 @@ fn add_employee(employees: &mut HashMap<String, String>, deps: &[&str]) {
 }
 
 fn show_all(employees: &HashMap<String, String>) {
-    let mut emp_vec: Vec<(&String, &String)>= employees.iter().collect();
+    let mut emp_vec: Vec<(&String, &String)> = employees.iter().collect();
     emp_vec.sort_by(|a, b| a.1.cmp(b.1));
     
+    println!("---");
     for (name, dep) in emp_vec {
         println!("{}: {}", name, dep);
     }
+    println!("---");
 }
 
-fn show_department(employees: &HashMap<String, String>) {
-    
+fn show_department(employees: &HashMap<String, String>, deps: &[&str]) {
+    let dep = Select::with_theme(&ColorfulTheme::default()).items(deps).default(0).interact().unwrap();
+    let filtered_employees = employees.iter().filter(|(_, val)| val.eq(&deps[dep]));
+    let mut filter_vec: Vec<(&String, &String)> = filtered_employees.collect();
+    filter_vec.sort_by(|a, b| a.0.cmp(b.0));
+
+    println!("---");
+    for (name, dep) in filter_vec {
+        println!("{}: {}", name, dep);
+    }
+    println!("---");
 }
